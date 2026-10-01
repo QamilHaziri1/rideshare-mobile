@@ -34,6 +34,12 @@ export default async function UdhetimiDetajePage({ params }: DetajePageProps) {
         <h2 className="text-base font-semibold text-amber-900">Kerkesa</h2>
         <p className="mt-1 text-sm text-amber-800">Simulim: Në pritje</p>
         <p className="mt-2 text-xs text-amber-800/80">Pa databazë dhe pa pagesë.</p>
+        <Link
+          href={`/udhetimi/${udhetim.id}/kerkesa`}
+          className="mt-3 inline-block rounded-md bg-amber-900 px-3 py-2 text-sm font-medium text-white hover:bg-amber-800"
+        >
+          Dërgo kërkesë
+        </Link>
       </section>
     </main>
   );
