@@ -2,45 +2,38 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { gjejUdhetimin } from "@/lib/udhetimet";
 
-type DetajePageProps = {
-  params: Promise<{ id: string }>;
-};
+export const dynamic = "force-dynamic";
 
-export default async function UdhetimiDetajePage({ params }: DetajePageProps) {
+export default async function Detajet({
+  params,
+}: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const udhetim = gjejUdhetimin(id);
-
-  if (!udhetim) {
-    notFound();
+  let udhetim;
+  try {
+    udhetim = await gjejUdhetimin(id);
+  } catch {
+    return (
+      <main>
+        <h1>RideShare</h1>
+        <p role="alert">Nuk u lidhëm me databazën. Provo përsëri.</p>
+        <Link href="/">← Kthehu te lista</Link>
+      </main>
+    );
   }
+  if (!udhetim) notFound();
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-8">
-      <Link href="/" className="text-sm font-medium text-zinc-700 hover:underline">
-        Kthehu te lista
-      </Link>
-
-      <h1 className="mt-4 text-2xl font-bold text-zinc-900">
-        {udhetim.nisja} - {udhetim.destinacioni}
-      </h1>
-
-      <section className="mt-6 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-        <p className="text-sm text-zinc-700">Ora: {udhetim.ora}</p>
-        <p className="text-sm text-zinc-700">Vendtakimi: {udhetim.vendtakimi}</p>
-        <p className="text-sm text-zinc-700">Vende te lira: {udhetim.vende}</p>
-      </section>
-
-      <section className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-4">
-        <h2 className="text-base font-semibold text-amber-900">Kerkesa</h2>
-        <p className="mt-1 text-sm text-amber-800">Simulim: Në pritje</p>
-        <p className="mt-2 text-xs text-amber-800/80">Pa databazë dhe pa pagesë.</p>
-        <Link
-          href={`/udhetimi/${udhetim.id}/kerkesa`}
-          className="mt-3 inline-block rounded-md bg-amber-900 px-3 py-2 text-sm font-medium text-white hover:bg-amber-800"
-        >
-          Dërgo kërkesë
+    <main>
+      <Link href="/">← Kthehu te lista</Link>
+      <h1>{udhetim.nisja} – {udhetim.destinacioni}</h1>
+      <p>Ora: {udhetim.ora}</p>
+      <p>Vendtakimi: {udhetim.vendtakimi}</p>
+      <p>Vende të lira: {udhetim.vende}</p>
+      {udhetim.vende > 0 ? (
+        <Link className="action" href={`/udhetimi/${id}/kerkesa`}>
+          Kërko vend
         </Link>
-      </section>
+      ) : <button className="action" disabled>Nuk ka vende të lira</button>}
     </main>
   );
 }
